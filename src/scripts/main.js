@@ -8,7 +8,7 @@ const game = new Game();
 
 const cells = document.querySelectorAll('.field-cell');
 const scoreElement = document.querySelector('.game-score');
-const startButton = document.querySelector('.button');
+const startButton = document.querySelector('.start');
 
 function render() {
   cells.forEach((cell, index) => {
@@ -30,5 +30,26 @@ function render() {
 
 startButton.addEventListener('click', () => {
   game.start();
+  render();
+});
+
+window.addEventListener('keydown', (e) => {
+  switch (e.key) {
+    case 'ArrowUp':
+      game.moveUp();
+      break;
+    case 'ArrowDown':
+      game.moveDown();
+      break;
+    case 'ArrowLeft':
+      game.moveLeft();
+      break;
+    case 'ArrowRight':
+      game.moveRight();
+      break;
+    default:
+      return;
+  }
+  game.addRandom();
   render();
 });

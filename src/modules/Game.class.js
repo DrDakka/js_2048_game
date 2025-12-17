@@ -35,10 +35,10 @@ class Game {
    * initial state.
    */
   constructor(initialState) {
-    this.state = initialState || defIniState;
+    this.state = null;
     this.score = 0;
     this.status = gameStatus.IDLE;
-    this.initialState = this.state.map((row) => [...row]);
+    this.initialState = initialState || defIniState;
     // eslint-disable-next-line no-console
     console.log(initialState);
   }
@@ -75,10 +75,113 @@ class Game {
     this.state[cell.x][cell.y] = val;
   }
 
-  moveLeft() {}
-  moveRight() {}
-  moveUp() {}
-  moveDown() {}
+  moveLeft() {
+    for (let line = 0; line < 4; line++) {
+      for (let col = 3; col > 0; col--) {
+        const digit = this.state[line][col];
+        const digitShift = this.state[line][col - 1];
+
+        if (digit === 0) {
+          continue;
+        }
+
+        if (digitShift === 0) {
+          this.state[line][col - 1] = digit;
+          this.state[line][col] = 0;
+          continue;
+        }
+
+        if (digitShift !== digit) {
+          continue;
+        } else {
+          this.state[line][col - 1] = digit * 2;
+          this.state[line][col] = 0;
+          continue;
+        }
+      }
+    }
+  }
+
+  moveRight() {
+    for (let line = 0; line < 4; line++) {
+      for (let col = 0; col < 3; col++) {
+        const digit = this.state[line][col];
+        const digitShift = this.state[line][col + 1];
+
+        if (digit === 0) {
+          continue;
+        }
+
+        if (digitShift === 0) {
+          this.state[line][col + 1] = digit;
+          this.state[line][col] = 0;
+          continue;
+        }
+
+        if (digitShift !== digit) {
+          continue;
+        } else {
+          this.state[line][col + 1] = digit * 2;
+          this.state[line][col] = 0;
+          continue;
+        }
+      }
+    }
+  }
+
+  moveUp() {
+    for (let line = 3; line > 0; line--) {
+      for (let col = 0; col < 4; col++) {
+        const digit = this.state[line][col];
+        const digitShift = this.state[line - 1][col];
+
+        if (digit === 0) {
+          continue;
+        }
+
+        if (digitShift === 0) {
+          this.state[line - 1][col] = digit;
+          this.state[line][col] = 0;
+          continue;
+        }
+
+        if (digitShift !== digit) {
+          continue;
+        } else {
+          this.state[line - 1][col] = digit * 2;
+          this.state[line][col] = 0;
+          continue;
+        }
+      }
+    }
+  }
+
+  moveDown() {
+    for (let line = 0; line < 3; line++) {
+      for (let col = 0; col < 4; col++) {
+        const digit = this.state[line][col];
+        const digitShift = this.state[line + 1][col];
+
+        if (digit === 0) {
+          continue;
+        }
+
+        if (digitShift === 0) {
+          this.state[line + 1][col] = digit;
+          this.state[line][col] = 0;
+          continue;
+        }
+
+        if (digitShift !== digit) {
+          continue;
+        } else {
+          this.state[line + 1][col] = digit * 2;
+          this.state[line][col] = 0;
+          continue;
+        }
+      }
+    }
+  }
 
   /**
    * @returns {number}
@@ -119,6 +222,7 @@ class Game {
   }
 
   start() {
+    this.state = this.initialState.map((row) => [...row]);
     this.status = gameStatus.PLAYING;
     this.addRandom();
     this.addRandom();
@@ -129,5 +233,4 @@ class Game {
    */
 }
 
-module.exports = Game;
 export default Game;
