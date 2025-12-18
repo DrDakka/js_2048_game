@@ -200,10 +200,28 @@ class Game {
     return false;
   }
 
-  restart() {
-    this.state = this.initialState.map((row) => [...row]);
-    this.score = 0;
-    this.status = gameStatus.PLAYING;
+  checkLose() {
+    if (this.state.some((el) => el.some((sub) => sub === 0))) {
+      return false;
+    }
+
+    for (let row = 0; row < 4; row++) {
+      for (let col = 0; col < 4; col++) {
+        const current = this.state[row][col];
+
+        if (col < 3 && this.state[row][col + 1] === current) {
+          return false;
+        }
+
+        if (row < 3 && this.state[row + 1][col] === current) {
+          return false;
+        }
+      }
+    }
+
+    this.status = gameStatus.LOSE;
+
+    return true;
   }
 
   start() {
@@ -213,6 +231,10 @@ class Game {
     this.addRandom();
   }
 
+  restart() {
+    this.start();
+    this.score = 0;
+  }
   /**
    * Resets the game.
    */

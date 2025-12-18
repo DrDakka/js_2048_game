@@ -10,6 +10,7 @@ const cells = document.querySelectorAll('.field-cell');
 const scoreElement = document.querySelector('.game-score');
 const startButton = document.querySelector('.start');
 const winMessage = document.querySelector('.message-win');
+const loseMessage = document.querySelector('.message-lose');
 
 function render() {
   cells.forEach((cell, index) => {
@@ -30,7 +31,22 @@ function render() {
 }
 
 startButton.addEventListener('click', () => {
-  game.start();
+  if (game.status === 'win') {
+    winMessage.classList.add('hidden');
+  }
+
+  if (game.status === 'lose') {
+    loseMessage.classList.add('hidden');
+  }
+
+  if (game.getStatus() === 'idle') {
+    game.start();
+    startButton.innerHTML = 'Restart';
+    startButton.classList.remove('start');
+    startButton.classList.add('restart');
+  } else {
+    game.restart();
+  }
   render();
 });
 
@@ -74,5 +90,11 @@ window.addEventListener('keydown', (e) => {
 
   if (winCheck) {
     winMessage.classList.remove('hidden');
+  }
+
+  const loseCheck = game.checkLose();
+
+  if (loseCheck) {
+    loseMessage.classList.remove('hidden');
   }
 });
