@@ -9,6 +9,7 @@ const game = new Game();
 const cells = document.querySelectorAll('.field-cell');
 const scoreElement = document.querySelector('.game-score');
 const startButton = document.querySelector('.start');
+const startMessage = document.querySelector('.message-start');
 const winMessage = document.querySelector('.message-win');
 const loseMessage = document.querySelector('.message-lose');
 
@@ -37,6 +38,10 @@ startButton.addEventListener('click', () => {
 
   if (game.status === 'lose') {
     loseMessage.classList.add('hidden');
+  }
+
+  if (!startMessage.classList.contains('hidden')) {
+    startMessage.classList.add('hidden');
   }
 
   if (game.getStatus() === 'idle') {
