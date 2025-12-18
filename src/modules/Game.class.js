@@ -75,112 +75,85 @@ class Game {
     this.state[cell.x][cell.y] = val;
   }
 
-  moveLeft() {
-    for (let line = 0; line < 4; line++) {
-      for (let col = 3; col > 0; col--) {
-        const digit = this.state[line][col];
-        const digitShift = this.state[line][col - 1];
+  processLine(array) {
+    const filtered = array.filter((el) => el !== 0);
+    const res = [];
 
-        if (digit === 0) {
-          continue;
-        }
+    let i = 0;
 
-        if (digitShift === 0) {
-          this.state[line][col - 1] = digit;
-          this.state[line][col] = 0;
-          continue;
-        }
-
-        if (digitShift !== digit) {
-          continue;
-        } else {
-          this.state[line][col - 1] = digit * 2;
-          this.state[line][col] = 0;
-          continue;
-        }
+    while (i < filtered.length) {
+      if (i < filtered.length - 1 && filtered[i] === filtered[i + 1]) {
+        res.push(filtered[i] * 2);
+        this.score += filtered[i] * 2;
+        i += 2;
+      } else {
+        res.push(filtered[i]);
+        i += 1;
       }
     }
+
+    while (res.length < 4) {
+      res.push(0);
+    }
+
+    return res;
+  }
+
+  moveLeft() {
+    this.state = this.state.map((el) => this.processLine(el));
   }
 
   moveRight() {
-    for (let line = 0; line < 4; line++) {
-      for (let col = 0; col < 3; col++) {
-        const digit = this.state[line][col];
-        const digitShift = this.state[line][col + 1];
+    const lines = [...this.state].map((el) => el.reverse());
 
-        if (digit === 0) {
-          continue;
-        }
-
-        if (digitShift === 0) {
-          this.state[line][col + 1] = digit;
-          this.state[line][col] = 0;
-          continue;
-        }
-
-        if (digitShift !== digit) {
-          continue;
-        } else {
-          this.state[line][col + 1] = digit * 2;
-          this.state[line][col] = 0;
-          continue;
-        }
-      }
-    }
+    this.state = lines
+      .map((el) => this.processLine(el))
+      .map((el) => el.reverse());
   }
 
   moveUp() {
-    for (let line = 3; line > 0; line--) {
-      for (let col = 0; col < 4; col++) {
-        const digit = this.state[line][col];
-        const digitShift = this.state[line - 1][col];
+    const lines = [[], [], [], []];
 
-        if (digit === 0) {
-          continue;
-        }
-
-        if (digitShift === 0) {
-          this.state[line - 1][col] = digit;
-          this.state[line][col] = 0;
-          continue;
-        }
-
-        if (digitShift !== digit) {
-          continue;
-        } else {
-          this.state[line - 1][col] = digit * 2;
-          this.state[line][col] = 0;
-          continue;
-        }
+    for (let col = 0; col < 4; col++) {
+      for (let row = 0; row < 4; row++) {
+        lines[col].push(this.state[row][col]);
       }
     }
+
+    const res = lines.map((el) => this.processLine(el));
+
+    const newState = [[], [], [], []];
+
+    for (let row = 0; row < 4; row++) {
+      for (let col = 0; col < 4; col++) {
+        newState[row][col] = res[col][row];
+      }
+    }
+    this.state = newState;
   }
 
   moveDown() {
-    for (let line = 0; line < 3; line++) {
-      for (let col = 0; col < 4; col++) {
-        const digit = this.state[line][col];
-        const digitShift = this.state[line + 1][col];
+    const lines = [[], [], [], []];
 
-        if (digit === 0) {
-          continue;
-        }
-
-        if (digitShift === 0) {
-          this.state[line + 1][col] = digit;
-          this.state[line][col] = 0;
-          continue;
-        }
-
-        if (digitShift !== digit) {
-          continue;
-        } else {
-          this.state[line + 1][col] = digit * 2;
-          this.state[line][col] = 0;
-          continue;
-        }
+    for (let col = 0; col < 4; col++) {
+      for (let row = 0; row < 4; row++) {
+        lines[col].push(this.state[row][col]);
       }
     }
+
+    const res = lines
+      .map((el) => el.reverse())
+      .map((el) => this.processLine(el))
+      .map((el) => el.reverse());
+
+    const newState = [[], [], [], []];
+
+    for (let row = 0; row < 4; row++) {
+      for (let col = 0; col < 4; col++) {
+        newState[row][col] = res[col][row];
+      }
+    }
+    this.state = newState;
   }
 
   /**
@@ -215,10 +188,22 @@ class Game {
    * Starts the game.
    */
 
+  checkWin() {
+    const win = this.state.some((el) => el.some((sub) => sub === 2 ** 11));
+
+    if (win) {
+      this.status = gameStatus.WIN;
+
+      return true;
+    }
+
+    return false;
+  }
+
   restart() {
     this.state = this.initialState.map((row) => [...row]);
     this.score = 0;
-    this.status = gameStatus.IDLE;
+    this.status = gameStatus.PLAYING;
   }
 
   start() {

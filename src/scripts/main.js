@@ -9,6 +9,7 @@ const game = new Game();
 const cells = document.querySelectorAll('.field-cell');
 const scoreElement = document.querySelector('.game-score');
 const startButton = document.querySelector('.start');
+const winMessage = document.querySelector('.message-win');
 
 function render() {
   cells.forEach((cell, index) => {
@@ -34,6 +35,8 @@ startButton.addEventListener('click', () => {
 });
 
 window.addEventListener('keydown', (e) => {
+  const snap = JSON.parse(JSON.stringify(game.state));
+
   switch (e.key) {
     case 'ArrowUp':
       game.moveUp();
@@ -50,6 +53,26 @@ window.addEventListener('keydown', (e) => {
     default:
       return;
   }
-  game.addRandom();
-  render();
+
+  let changed = false;
+
+  for (let i = 0; i < 4 && !changed; i++) {
+    for (let x = 0; x < 4; x++) {
+      if (snap[i][x] !== game.state[i][x]) {
+        changed = true;
+        break;
+      }
+    }
+  }
+
+  if (changed) {
+    game.addRandom();
+    render();
+  }
+
+  const winCheck = game.checkWin();
+
+  if (winCheck) {
+    winMessage.classList.remove('hidden');
+  }
 });
